@@ -38,16 +38,20 @@ OurGroceriesClient.prototype.authenticate = function(username, password, complet
       console.log("Error Authenticating: "+err);
       complete({success:false, error:err});
     } else {
-      console.log("Success");
       self.auth = jar.getCookieString(urls.signIn);
-      self.getTeamId(function(teamIdResponse) {
-        if (teamIdResponse.success) {
-          self.teamId = teamIdResponse.teamId;
-          complete({success:true});    
-        } else {
-          complete(teamIdResponse);
-        }
-      });
+      if (self.auth) {
+        console.log("Success");
+        self.getTeamId(function(teamIdResponse) {
+          if (teamIdResponse.success) {
+            self.teamId = teamIdResponse.teamId;
+            complete({success:true});    
+          } else {
+            complete(teamIdResponse);
+          }
+        });
+      } else {
+        complete({success:false,error:"Invalid Credentials"});
+      }
     }
   });
 }
