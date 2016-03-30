@@ -13,38 +13,41 @@ var OurGroceriesClient = require('our-groceries-client');
 
 var username = "<your our groceries username>"
   , password = "<your our groceries password>"
-  , listName = "Safeway"
-  , itemName = "Apples";
+  , listName = "<your list name>"
+  , itemName = "Apples"
+  , quantity = 1;
 
 var client = new OurGroceriesClient();
 
-client.authenticate(username, password, function(authResult) {
-    if (authResult.success) {
-        client.getLists(function(listsResult) {
-            if (listsResult.success) {
-                var lists = listsResult.response.shoppingLists;
-                console.log("Retrieved " + lists.length + " lists");
-                if (lists.length > 0) {               
-                    var list = client.getList(lists, listName);
-                    if (list) {
-                        client.addToList(list.id, itemName, 1, function(addToListResult) {
-                            if (addToListResult.success) {
-                                console.log("Successfully added to list.");
-                            } else {
-                                console.log("Error Adding to list: "+addToListResult.error);
-                            }
-                        });
-                    } else {
-                        console.log("List not found");
-                    }
-                }
+var handlers = {
+    authComplete: function(result) {
+        if (result.success) {
+            client.getLists(handlers.getListsComplete);
+        } else {
+            console.log("Authentication Failed: "+result.error);
+        }
+    },
+    getListsComplete: function(result) {
+        if (result.success) {
+            var list = client.getList(result.response.shoppingLists, listName);
+            if (list) {
+                client.addToList(list.id, itemName, quantity, handlers.addToListComplete);
             } else {
-                console.log(listsResult.error);
+                console.log("Unable to find list: "+listName);
             }
-        });
-    } else {
-        console.log("Authentication failed: "+authResult.error);
+        } else {
+            console.log("Unable to get lists: "+result.error);
+        }
+    },
+    addToListComplete: function(result) {
+        if (result.success) {
+            console.log("Successfully added to list.");
+        } else {
+            console.log("Unable to add to list: "+result.error);
+        }
     }
-});
+}
+
+client.authenticate(username, password, handlers.authComplete);
 ```
 
