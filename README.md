@@ -5,6 +5,11 @@ Current Features
  * Allows Retrieval of User's grocery lists
  * Allows addition of items to lists
 
+### Installation
+```
+npm install our-groceries-client
+```
+
 ### Usage
 
 ```javascript
