@@ -116,4 +116,14 @@ OurGroceriesClient.prototype.addToList = function(listId, itemName, quantity, co
   });
 }
 
+OurGroceriesClient.prototype.getList = function(lists, listName) {
+  listName = listName.toLowerCase().replace(/\W/g, '');
+  var allLists = lists.map((item) => {
+    item.matchName = item.name.toLowerCase().replace(/\W/g, '');
+    return item;
+  });
+  var candidates = allLists.filter((item) => item.matchName.indexOf(listName) === 0 || listName.indexOf(item.matchName) === 0);
+  return candidates.length > 0 ? candidates[0] : null;
+}
+
 module.exports = OurGroceriesClient;

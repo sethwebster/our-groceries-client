@@ -19,28 +19,32 @@ var username = "<your our groceries username>"
 var client = new OurGroceriesClient();
 
 client.authenticate(username, password, function(authResult) {
-	if (authResult.success) {
-		client.getLists(function(listsResult) {
-        	if (listsResult.success) {
-            	var lists = listsResult.response.shoppingLists;
-            	console.log("Retrieved " + lists.length + " lists");
+    if (authResult.success) {
+        client.getLists(function(listsResult) {
+            if (listsResult.success) {
+                var lists = listsResult.response.shoppingLists;
+                console.log("Retrieved " + lists.length + " lists");
                 if (lists.length > 0) {               
-	                client.addToList(lists[0].id, itemName, 1, function(addToListResult) {
-                    	if (addToListResult.success) {
-                        	console.log("Successfully added to list.");
-                        } else {
-                        	console.log("Error Adding to list: "+addToListResult.error);
-                        }
-                    });
+                    var list = client.getList(lists, listName);
+                    if (list) {
+                        client.addToList(list.id, itemName, 1, function(addToListResult) {
+                            if (addToListResult.success) {
+                                console.log("Successfully added to list.");
+                            } else {
+                                console.log("Error Adding to list: "+addToListResult.error);
+                            }
+                        });
+                    } else {
+                        console.log("List not found");
+                    }
                 }
             } else {
-            	console.log(listsResult.error);
+                console.log(listsResult.error);
             }
         });
     } else {
-    	console.log("Authentication failed: "+authResult.error);
+        console.log("Authentication failed: "+authResult.error);
     }
 });
-
 ```
 
