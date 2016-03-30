@@ -3,11 +3,13 @@
 import gulp from 'gulp';
 import babel from 'gulp-babel';
 import sourcemaps from 'gulp-sourcemaps';
+import merge from 'merge-stream';
 
 const paths = {
   sources: {
     js: "src/*.js",
-    package: 'package.json'
+    package: 'package.json',
+    readme: 'README.md'
   },
   destinations: {
     output: "build"
@@ -25,8 +27,11 @@ gulp.task('build-js', () => {
 });
 
 gulp.task('build-npm-package', () => {
-  return gulp.src(paths.sources.package)
+  var pkg = gulp.src(paths.sources.package)
          .pipe(gulp.dest(paths.destinations.output));
+  var rm = gulp.src(paths.sources.readme)
+         .pipe(gulp.dest(paths.destinations.output));
+  return merge(pkg, rm);
 });
 
 gulp.task('default',['build-js','build-npm-package']);
