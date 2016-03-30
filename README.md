@@ -8,19 +8,24 @@ Current Features
 ### Usage
 
 ```javascript
-import OurGroceriesClient from 'our-groceries-client' 
-// or var OurGroceriesClient = require('our-groceries-client');
+var OurGroceriesClient = require('our-groceries-client');
+// or import OurGroceriesClient from 'our-groceries-client' 
+
+var username = "<your our groceries username>"
+  , password = "<your our groceries password>"
+  , listName = "Safeway"
+  , itemName = "Apples";
 
 var client = new OurGroceriesClient();
 
-client.authenticate("<username>","<password>", function(authResult) {
+client.authenticate(username, password, function(authResult) {
 	if (authResult.success) {
 		client.getLists(function(listsResult) {
         	if (listsResult.success) {
             	var lists = listsResult.response.shoppingLists;
             	console.log("Retrieved " + lists.length + " lists");
                 if (lists.length > 0) {               
-	                client.addToList(lists[0].id, "Apples", 1, function(addToListResult) {
+	                client.addToList(lists[0].id, itemName, 1, function(addToListResult) {
                     	if (addToListResult.success) {
                         	console.log("Successfully added to list.");
                         } else {
@@ -38,3 +43,4 @@ client.authenticate("<username>","<password>", function(authResult) {
 });
 
 ```
+
