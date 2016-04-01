@@ -121,7 +121,31 @@ OurGroceriesClient.prototype.addToList = function(listId, itemName, quantity, co
   });
 }
 
-OurGroceriesClient.prototype.getList = function(lists, listName) {
+OurGroceriesClient.prototype.getList = function(listId, complete) {
+  complete = complete || defaultHandler;
+  var self = this;
+
+  request.post({
+    url:urls.yourLists,
+    headers: {
+      "Accept": "application/json, text/javascript, */*",
+      "Origin": "https://www.ourgroceries.com",
+      "Referer": "https://www.ourgroceries.com/your-list",
+      "X-Requested-With": "XMLHttpRequest",
+      "Host": "www.ourgroceries.com",
+      "Content-Type": "application/json"    
+    },
+    json: { command: "getList", teamId: self.teamId, listId:listId }
+  }, function(err, response, body) {
+    if (err) {
+      complete({success:false, error:err});
+    } else {
+      complete({success:true, response:body});
+    }
+  });
+}
+
+OurGroceriesClient.prototype.findList = function(lists, listName) {
   listName = listName.toLowerCase().replace(/\W/g, '');
   var allLists = lists.map((item) => {
     item.matchName = item.name.toLowerCase().replace(/\W/g, '');

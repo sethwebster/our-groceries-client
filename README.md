@@ -24,7 +24,8 @@ var username = "<your our groceries username>"
 
 var client = new OurGroceriesClient();
 
-var handlers = {
+var handlers = {   
+    // Called when authentication completes, either success or failure 
     authComplete: function(result) {
         if (result.success) {
             client.getLists(handlers.getListsComplete);
@@ -32,11 +33,12 @@ var handlers = {
             console.log("Authentication Failed: "+result.error);
         }
     },
+    // Called when fetching the list of lists completes, either success or failure 
     getListsComplete: function(result) {
         if (result.success) {
-            var list = client.getList(result.response.shoppingLists, listName);
+            var list = client.findList(result.response.shoppingLists, listName);
             if (list) {
-                client.addToList(list.id, itemName, quantity, handlers.addToListComplete);
+                client.getList(list.id, handlers.getListComplete);                
             } else {
                 console.log("Unable to find list: "+listName);
             }
@@ -44,6 +46,12 @@ var handlers = {
             console.log("Unable to get lists: "+result.error);
         }
     },
+    // Called when fetching a single list completes, either success or failure 
+    getListComplete: function(result) {
+        var list = result.response.list;
+        client.addToList(list.id, itemName, quantity, handlers.addToListComplete);
+    },
+    // Called after adding the item completes
     addToListComplete: function(result) {
         if (result.success) {
             console.log("Successfully added to list.");
@@ -53,6 +61,7 @@ var handlers = {
     }
 }
 
+// Authenticate
 client.authenticate(username, password, handlers.authComplete);
 ```
 
