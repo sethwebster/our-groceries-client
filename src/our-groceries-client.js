@@ -101,6 +101,11 @@ OurGroceriesClient.prototype.addToList = function(listId, itemName, quantity, co
   complete = complete || defaultHandler;
   var self = this;
 
+  //Append quantity to item name if supplied, which server will parse on its side
+  if(quantity && quantity > 1) {
+	  itemName += ' (' + quantity + ')';
+  }
+  
   request.post({
     url:urls.yourLists,
     headers: {
