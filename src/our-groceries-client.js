@@ -23,7 +23,7 @@ OurGroceriesClient.prototype.authenticate = function(username, password, complet
   console.log("Authenticating");
   var self = this;
   request.post({
-    url:urls.signIn, 
+    url:urls.signIn,
     form: {
       emailAddress:username,
       action:"sign-me-in",
@@ -46,7 +46,7 @@ OurGroceriesClient.prototype.authenticate = function(username, password, complet
         self.getTeamId(function(teamIdResponse) {
           if (teamIdResponse.success) {
             self.teamId = teamIdResponse.teamId;
-            complete({success:true});    
+            complete({success:true});
           } else {
             complete(teamIdResponse);
           }
@@ -61,7 +61,7 @@ OurGroceriesClient.prototype.authenticate = function(username, password, complet
 OurGroceriesClient.prototype.getTeamId = function(complete) {
   complete = complete || defaultHandler;
   console.log("Getting team id");
-  request(urls.yourLists, function(err, response, body) {    
+  request(urls.yourLists, function(err, response, body) {
     if (err) {
       console.log("Error getting team id:"+err);
       complete({success:false, error:err});
@@ -85,7 +85,7 @@ OurGroceriesClient.prototype.getLists = function(complete) {
       Referer: "https://www.ourgroceries.com/your-list",
       "X-Requested-With": "XMLHttpRequest",
       "Host": "www.ourgroceries.com",
-      "Content-Type": "application/json"    
+      "Content-Type": "application/json"
     },
     json: { command: "getOverview", teamId: self.teamId }
   }, function(err, response, body) {
@@ -105,7 +105,7 @@ OurGroceriesClient.prototype.addToList = function(listId, itemName, quantity, co
   if(quantity && quantity > 1) {
 	  itemName += ' (' + quantity + ')';
   }
-  
+
   request.post({
     url:urls.yourLists,
     headers: {
@@ -114,9 +114,34 @@ OurGroceriesClient.prototype.addToList = function(listId, itemName, quantity, co
       Referer: "https://www.ourgroceries.com/your-list",
       "X-Requested-With": "XMLHttpRequest",
       "Host": "www.ourgroceries.com",
-      "Content-Type": "application/json"    
+      "Content-Type": "application/json"
     },
     json: { command: "insertItem", teamId: self.teamId, listId:listId, value:itemName }
+  }, function(err, response, body) {
+    if (err) {
+      complete({success:false, error:err});
+    } else {
+      complete({success:true, response:body});
+    }
+  });
+}
+
+OurGroceriesClient.prototype.uncrossOff = function( itemId, listId, complete) {
+  complete = complete || defaultHandler;
+  var self = this;
+
+
+  request.post({
+    url:urls.yourLists,
+    headers: {
+      Accept: "application/json, text/javascript, */*",
+      Origin: "https://www.ourgroceries.com",
+      Referer: "https://www.ourgroceries.com/your-list",
+      "X-Requested-With": "XMLHttpRequest",
+      "Host": "www.ourgroceries.com",
+      "Content-Type": "application/json"
+    },
+    json: {command:"setItemCrossedOff", itemId: itemId, listId:listId, crossedOff:false, teamId:self.teamId }
   }, function(err, response, body) {
     if (err) {
       complete({success:false, error:err});
@@ -138,7 +163,7 @@ OurGroceriesClient.prototype.getList = function(listId, complete) {
       "Referer": "https://www.ourgroceries.com/your-list",
       "X-Requested-With": "XMLHttpRequest",
       "Host": "www.ourgroceries.com",
-      "Content-Type": "application/json"    
+      "Content-Type": "application/json"
     },
     json: { command: "getList", teamId: self.teamId, listId:listId }
   }, function(err, response, body) {
