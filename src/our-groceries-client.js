@@ -26,7 +26,7 @@ OurGroceriesClient.prototype.authenticate = function(username, password, complet
     url:urls.signIn,
     form: {
       emailAddress:username,
-      action:"sign-me-in",
+      action:"sign-in",
       password:password,
       staySignedIn:"on"
     },
